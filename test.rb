@@ -1,187 +1,108 @@
-# 二分探索木
-class Tree
-  # 節の定義
-  class Node
-    def initialize(key, data)
-      @key = key
-      @data = data
-      @left = nil
-      @right = nil
-    end
-    attr_accessor :key, :data, :left, :right
-  end
-  
+class PriorityQueue
   def initialize
-    @root = nil
+    @node = []
+    @n = 0
   end
-  
-  # 操作関数
+
   private
 
-  # 探索
-  def search(node, key)
-    while node
-      if key == node.key
-        return node
-      elsif key < node.key
-        node = node.left
-      else
-        node = node.right
+  def left_key key
+    2*key+1
+  end
+
+  def right_key key
+    2*key+2
+  end
+
+  def from_root_swap key
+    right = right_key(key)
+    left = left_key(key)
+    if  key < 0 
+      return nil
+    end
+    if !@node[left] && !@node[right]
+      return nil
+    elsif @node[left] && !@node[right]
+      if @node[left] > @node[key]
+        @node[key], @node[left] =  @node[left], @node[key]
+        from_root_swap(left)
       end
+    elsif @node[right] && !@node[left]
+      if @node[right] > @node[key]
+        @node[key], @node[right] =  @node[right], @node[key]
+        from_root_swap(right)
+      end
+    elsif @node[key] <= @node[left] && @node[left] >= @node[right]
+      @node[key], @node[left] =  @node[left], @node[key]
+      from_root_swap(left)
+    elsif @node[key] <= @node[right] && @node[right] >= @node[left]
+      @node[key], @node[right] =  @node[right], @node[key]
+      from_root_swap(right)
     end
   end
-  
-  # 挿入
-  def insert!(node, key, data)
-    if node == nil
-      return Node.new(key, data)
-    elsif key == node.key
-      node.data = data
-    elsif key < node.key
-      node.left = insert!(node.left, key, data)
+
+  def from_leaf_swap key
+    if key == 0
+      return nil
+    end
+    parent_key = (key-1)/2
+    if @node[parent_key] < @node[key]
+      @node[key], @node[parent_key] = @node[parent_key], @node[key]
+      from_leaf_swap(parent_key)
+    end
+  end
+
+  def extract!
+    node = @node[0]
+    if @node.size == 0
+      raise "Queue is Empty"
+    elsif @node.size == 1
+      @n -= 1
+      return @node.pop
     else
-      node.right = insert!(node.right, key, data)
-    end
-    node
-  end
-  
-  # 最小値を探す
-  def search_min(node)
-    node = node.left while node.left
-    node
-  end
-  
-  # 最大値を探す
-  def search_max(node)
-    node = node.right while node.right
-    node
-  end
-  
-  # 最小値を削除する
-  def delete_min!(node)
-    return node.right unless node.left
-    node.left = delete_min!(node.left)
-    node
-  end
-  
-  # 削除
-  def delete!(node, key)
-    data = nil
-    if node
-      if key == node.key
-        data = node.data
-        if node.left == nil
-          return node.right, data
-        elsif node.right == nil
-          return node.left, data
-        else
-          min_node = search_min(node.right)
-          node.key = min_node.key
-          node.data = min_node.data
-          node.right = delete_min!(node.right)
-        end
-      elsif key < node.key
-        node.left, data = delete!(node.left, key)
-      else
-        node.right, data = delete!(node.right, key)
-      end
-    end
-    return node, data
-  end
-
-  # 先行順探索
-  def precedingOrderSearch(node, &func)
-    if node
-      func.call(node.key, node.data)
-      precedingOrderSearch(node.left, &func)
-      precedingOrderSearch(node.right, &func)
-    end
-  end
-  # 後行順探索
-  def afterLineOrderSearch(node, &func)
-    if node
-      afterLineOrderSearch(node.left, &func)
-      afterLineOrderSearch(node.right, &func)
-      func.call(node.key, node.data)
-    end
-  end
-  #中央順探索
-  def centerOrderSearch(node, &func)
-    if node
-      centerOrderSearch(node.left, &func)
-      func.call(node.key, node.data)
-      centerOrderSearch(node.right, &func)
+      @n -= 1
+      node = @node[0]
+      @node[0] = @node.pop
+      from_root_swap(0)
+      return node
     end
   end
 
 
-  # 公開メソッド
+  def insert! num
+    @node << num
+    @n += 1
+    from_leaf_swap(@n-1)
+  end
+
+  
+
   public
 
-  # 探索
-  def find(key)
-    node = search(@root, key)
-    if node
-      node.data
-    end
-  end
-  
-  # 挿入 (更新)
-  def insert(key, value)
-    @root = insert!(@root, key, value)
-  end
-  
-  # 削除
-  def delete_key(key)
-    @root, data = delete!(@root, key)
-    data
-  end
-  
-  # 最小値を求める
-  def min
-    if @root
-      node = search_min(@root)
-      if node
-        return node.key, node.data
-      end
-    end
-  end
-  
-  # 最大値を求める
-  def max
-    if @root
-      node = search_max(@root)
-      if node
-        return node.key, node.data
-      end
-    end
-  end
-  
-  # 先行巡回
-  def precedingCrawl(&func)
-    precedingOrderSearch(@root, &func)
+  def << num
+    insert!(num)
   end
 
-# 後行巡回
-def afterLineCrawl(&func)
-  afterLineOrderSearch(@root, &func)
-end
+  def pop
+    extract!
+  end
 
-# 中央巡回
-def centerCrawl(&func)
-  centerOrderSearch(@root, &func)
+  def empty?
+    @node.empty?
+  end
+  
 end
 
 
-def inspect
-  sprintf("#<Tree:%#x>", self.object_id)
-end
+pq = PriorityQueue.new
+V = Struct.new(:cost)
+10.times do
+  pq << 1
+  pq << 2
+  pq << 1
 end
 
-head = Tree.new
-
-head.insert 1,1
-head.insert 2,2
-head.afterLineCrawl do |key, value|
-  puts "#{key} #{value}"
+20.times do
+  puts pq.pop
 end
+
