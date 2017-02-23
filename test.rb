@@ -1,108 +1,63 @@
-class PriorityQueue
-  def initialize
-    @node = []
-    @n = 0
-  end
+class DisjointSet 
+	def initialize()
+		@rank = []
+		@p = []
+	end
 
-  private
+	def initialize(size)
+		@rank = Array.new(size){0}
+		@p = Array.new(size){0}
 
-  def left_key key
-    2*key+1
-  end
+		size.times do |i|
+			@p[i] = i
+		end
+	end
 
-  def right_key key
-    2*key+2
-  end
+	def same(x, y)
+		return findSet(x) == findSet(y)
+	end
 
-  def from_root_swap key
-    right = right_key(key)
-    left = left_key(key)
-    if  key < 0 
-      return nil
-    end
-    if !@node[left] && !@node[right]
-      return nil
-    elsif @node[left] && !@node[right]
-      if @node[left] > @node[key]
-        @node[key], @node[left] =  @node[left], @node[key]
-        from_root_swap(left)
-      end
-    elsif @node[right] && !@node[left]
-      if @node[right] > @node[key]
-        @node[key], @node[right] =  @node[right], @node[key]
-        from_root_swap(right)
-      end
-    elsif @node[key] <= @node[left] && @node[left] >= @node[right]
-      @node[key], @node[left] =  @node[left], @node[key]
-      from_root_swap(left)
-    elsif @node[key] <= @node[right] && @node[right] >= @node[left]
-      @node[key], @node[right] =  @node[right], @node[key]
-      from_root_swap(right)
-    end
-  end
+	def unite(x, y)
+		link(findSet(x), findSet(y))
+	end
 
-  def from_leaf_swap key
-    if key == 0
-      return nil
-    end
-    parent_key = (key-1)/2
-    if @node[parent_key] < @node[key]
-      @node[key], @node[parent_key] = @node[parent_key], @node[key]
-      from_leaf_swap(parent_key)
-    end
-  end
+	def link(x, y)
+		if @rank[x] > @rank[y]
+			@p[y] = x
+		else
+			@p[x] = y
+			@rank[y] += 1 if @rank[x] == @rank[y]
+		end
+	end
 
-  def extract!
-    node = @node[0]
-    if @node.size == 0
-      raise "Queue is Empty"
-    elsif @node.size == 1
-      @n -= 1
-      return @node.pop
-    else
-      @n -= 1
-      node = @node[0]
-      @node[0] = @node.pop
-      from_root_swap(0)
-      return node
-    end
-  end
+	def findSet(x)
+		@p[x] = findSet(@p[x]) unless x == @p[x] 
+		return @p[x]
+	end
 
-
-  def insert! num
-    @node << num
-    @n += 1
-    from_leaf_swap(@n-1)
-  end
-
-  
-
-  public
-
-  def << num
-    insert!(num)
-  end
-
-  def pop
-    extract!
-  end
-
-  def empty?
-    @node.empty?
-  end
-  
 end
 
 
-pq = PriorityQueue.new
-V = Struct.new(:cost)
-10.times do
-  pq << 1
-  pq << 2
-  pq << 1
+n,q = gets.split.map(&:to_i)
+
+ds = DisjointSet.new(n)
+
+q.times do |i|
+	t, a, b = gets.split.map(&:to_i)
+	
+	if t == 0
+		ds.unite(a, b)
+	elsif t == 1
+		if ds.same(a, b)
+			puts 1
+		else
+			puts 0
+		end
+	end
 end
 
-20.times do
-  puts pq.pop
-end
+
+
+
+
 
