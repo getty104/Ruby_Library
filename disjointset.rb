@@ -1,4 +1,16 @@
+
 class DisjointSet 
+
+	def initialize(size = nil)
+		@rank = Array.new(size){0}
+		@p = Array.new(size){0}
+		if size 
+			size.times do |i|
+				@p[i] = i
+			end
+		end
+	end
+
 	private
 
 	def link(x, y)
@@ -11,25 +23,11 @@ class DisjointSet
 	end
 
 	def findSet(x)
-		@p[x] = findSet(@p[x])
+		@p[x] = findSet(@p[x]) unless x == @p[x] 
 		return @p[x]
 	end
 
 	public
-
-	def initialize()
-		@rank = []
-		@p = []
-	end
-
-	def initialize(size)
-		@rank = Array.new(size){0}
-		@p = Array.new(size){0}
-
-		size.times do |i|
-			@p[i] = i
-		end
-	end
 
 	def same(x, y)
 		return findSet(x) == findSet(y)
@@ -40,4 +38,3 @@ class DisjointSet
 	end
 
 end
-

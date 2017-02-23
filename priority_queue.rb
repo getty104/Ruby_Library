@@ -1,85 +1,63 @@
 class PriorityQueue
+
+	def initialize size = nil
+		@heap = 0
+		@node = Array.new(size)
+	end
+
 	def initialize
+		@heap = 0
 		@node = []
-		@n = 0
 	end
 
 	private
 
-	def left_key key
-		2*key+1
-	end
+	def maxHeapfy key
+		left = 2 * key
+		right = 2 * key + 1
 
-	def right_key key
-		2*key+2
-	end
+		if left <= @heap && @node[left] > @node[key]
+			largest = left
+		else
+			largest = key
+		end
 
-	def from_root_swap key
-		right = right_key(key)
-		left = left_key(key)
-		if  key < 0 
-			return nil
-		end
-		if !@node[left] && !@node[right]
-			return nil
-		elsif @node[left] && !@node[right]
-			if @node[left] > @node[key]
-				@node[key], @node[left] =  @node[left], @node[key]
-				from_root_swap(left)
-			end
-		elsif @node[right] && !@node[left]
-			if @node[right] > @node[key]
-				@node[key], @node[right] =  @node[right], @node[key]
-				from_root_swap(right)
-			end
-		elsif @node[key] <= @node[left] && @node[left] >= @node[right]
-			@node[key], @node[left] =  @node[left], @node[key]
-			from_root_swap(left)
-		elsif @node[key] <= @node[right] && @node[right] >= @node[left]
-			@node[key], @node[right] =  @node[right], @node[key]
-			from_root_swap(right)
-		end
-	end
+		largest = right	if right <= @heap && @node[right] > @node[largest]
 
-	def from_leaf_swap key
-		if key == 0
-			return nil
-		end
-		parent_key = (key-1)/2
-		if @node[parent_key] < @node[key]
-			@node[key], @node[parent_key] = @node[parent_key], @node[key]
-			from_leaf_swap(parent_key)
+		unless largest == key
+			@node[key], @node[largest] = @node[largest], @node[key]
+			maxHeapfy largest
 		end
 	end
 
 	def extract!
-		node = @node[0]
-		if @node.size == 0
-			railse "Queue is Empty"
-		elsif @node.size == 1
-			@n -= 1
-			return @node.pop
-		else
-			@n -= 1
-			node = @node[0]
-			@node[0] = @node.pop
-			from_root_swap(0)
-			return node
+		return -Float::INFINITY if @heap < 1
+		maxv = @node[1]
+		@node[1] = @node[@heap]
+		@heap -= 1
+		maxHeapfy 1
+		return maxv
+	end
+
+	def increaseKey i, key
+		return if key < @node[i]
+		@node[i] = key
+		while i > 1 && @node[i / 2] < @node[i]
+			@node[i], @node[i / 2] = @node[i / 2], @node[i]
+			i = i / 2
 		end
 	end
 
-	def insert! num
-		@node << num
-		@n += 1
-		from_leaf_swap(@n-1)
+	def insert! key
+		@heap += 1
+		@node[@heap] = -Float::INFINITY
+		increaseKey @heap, key
 	end
-
-	
 
 	public
 
-	def << num
-		insert!(num)
+	def << key
+		insert! key
 	end
 
 	def pop
