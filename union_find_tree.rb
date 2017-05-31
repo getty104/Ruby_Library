@@ -1,4 +1,3 @@
-
 class UnionFindTree
 
 	def initialize(size = 1000)
@@ -18,11 +17,11 @@ class UnionFindTree
 
 	public
 
-	def unite!(x, y)
+	def unite(x, y)
 		x = find(x)
 		y = find(y)
 
-		return nil if x == y 
+		return nil if x == y
 		x, y = y, x if @size[x] < @size[y]
 
 		@par[y] = x
@@ -38,10 +37,3 @@ class UnionFindTree
 	end
 
 end
-
-
-u = UnionFindTree.new
-100.times do |i|
-	u.unite!(i, i + 1)
-end
-

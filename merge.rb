@@ -1,6 +1,6 @@
 module Merge
 	def merge!(a,left,mid,right)
-		n1 = mid - left 
+		n1 = mid - left
 		n2 = right - mid
 		l = []
 		r = []
@@ -10,7 +10,7 @@ module Merge
 		l << Float::INFINITY
 		n2.times do |i|
 			r << a[mid + i]
-		end 
+		end
 		r << Float::INFINITY
 		i = 0
 		j = 0
@@ -31,7 +31,7 @@ module Merge
 			mid = (left + right)/2
 			merge_sort!(a, left, mid)
 			merge_sort!(a, mid, right)
-			merge!(a, left, mid, right) 
+			merge!(a, left, mid, right)
 		end
 	end
 
