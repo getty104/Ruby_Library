@@ -10,11 +10,11 @@ class Tree
 		end
 		attr_accessor :key, :data, :left, :right
 	end
-	
+
 	def initialize
 		@root = nil
 	end
-	
+
 	# 操作関数
 	private
 
@@ -30,7 +30,7 @@ class Tree
 			end
 		end
 	end
-	
+
 	# 挿入
 	def insert!(node, key, data)
 		if node == nil
@@ -44,26 +44,26 @@ class Tree
 		end
 		node
 	end
-	
+
 	# 最小値を探す
 	def search_min(node)
 		node = node.left while node.left
 		node
 	end
-	
+
 	# 最大値を探す
 	def search_max(node)
 		node = node.right while node.right
 		node
 	end
-	
+
 	# 最小値を削除する
 	def delete_min!(node)
 		return node.right unless node.left
 		node.left = delete_min!(node.left)
 		node
 	end
-	
+
 	# 削除
 	def delete!(node, key)
 		data = nil
@@ -115,7 +115,6 @@ class Tree
 	end
 
 
-	# 公開メソッド
 	public
 
 	# 探索
@@ -125,18 +124,18 @@ class Tree
 			node.data
 		end
 	end
-	
+
 	# 挿入 (更新)
 	def insert(key, value)
 		@root = insert!(@root, key, value)
 	end
-	
+
 	# 削除
 	def delete_key(key)
 		@root, data = delete!(@root, key)
 		data
 	end
-	
+
 	# 最小値を求める
 	def min
 		if @root
@@ -146,7 +145,7 @@ class Tree
 			end
 		end
 	end
-	
+
 	# 最大値を求める
 	def max
 		if @root
@@ -156,7 +155,7 @@ class Tree
 			end
 		end
 	end
-	
+
 	# 先行巡回
 	def preceding_crawl(&func) #　hoge.precedingCrawl do |key, value| のように使う
 		precedingOrderSearch(@root, &func)
