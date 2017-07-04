@@ -49,11 +49,11 @@ class UnionFindTree
 
 end
 u = UnionFindTree.new
-100.times do |i|
-	u.unite(i, i+1)
+(10**5).times do |i|
+	u.unite(rand(10**9), rand(10**9))
 end
 
-100.times do |i|
-p u.same?(i,i+1)
+(10**5).times do |i|
+ u.same?(i,i+1)
 end
 
